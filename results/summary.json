@@ -1,0 +1,104 @@
+{
+  "config": {
+    "horizon": 10,
+    "train_trajectories": 640,
+    "eval_episodes": 24,
+    "seed": 13,
+    "n_values": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "variants": [
+      "in_support",
+      "out_of_support",
+      "anti_aligned_scorer",
+      "horizon_stress"
+    ]
+  },
+  "summary_by_variant": {
+    "anti_aligned_scorer": {
+      "raw_predicted_gain_1_to_64": 2.8695652173913047,
+      "raw_realized_change_1_to_64": -1.39228168146861,
+      "sieve_minus_raw_realized_at_64": 2.663925483697561,
+      "raw_risk_rate_at_64": 0.9915364583333334
+    },
+    "horizon_stress": {
+      "raw_predicted_gain_1_to_64": 5.571739130434782,
+      "raw_realized_change_1_to_64": -7.552598413106919,
+      "sieve_minus_raw_realized_at_64": 5.455165794444399,
+      "raw_risk_rate_at_64": 0.9889322916666666
+    },
+    "in_support": {
+      "raw_predicted_gain_1_to_64": 3.1884057971014492,
+      "raw_realized_change_1_to_64": -0.9689100750304167,
+      "sieve_minus_raw_realized_at_64": 2.002195697987535,
+      "raw_risk_rate_at_64": 0.724609375
+    },
+    "out_of_support": {
+      "raw_predicted_gain_1_to_64": 4.232608695652175,
+      "raw_realized_change_1_to_64": 2.9408165841176057,
+      "sieve_minus_raw_realized_at_64": 1.6728677884813372,
+      "raw_risk_rate_at_64": 1.0
+    }
+  },
+  "thresholds_by_variant": {
+    "in_support": {
+      "min_avg_logprob": -1.1471643895975356,
+      "max_prefix_surprise": 3.9379946261524412,
+      "max_dynamics_error": 0.1929458349170351,
+      "max_risk_rate": 0.38
+    },
+    "out_of_support": {
+      "min_avg_logprob": -1.2733501804598906,
+      "max_prefix_surprise": 4.1878639573850664,
+      "max_dynamics_error": 0.1974362888498505,
+      "max_risk_rate": 0.38
+    },
+    "anti_aligned_scorer": {
+      "min_avg_logprob": -1.2703389375900191,
+      "max_prefix_surprise": 4.137994267254336,
+      "max_dynamics_error": 0.19517673153711723,
+      "max_risk_rate": 0.38
+    },
+    "horizon_stress": {
+      "min_avg_logprob": -1.1658244048777913,
+      "max_prefix_surprise": 4.35388401186687,
+      "max_dynamics_error": 0.17663433463573838,
+      "max_risk_rate": 0.38
+    }
+  },
+  "exact_law": {
+    "N": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "exact": [
+      0.46,
+      0.48040000000000005,
+      0.45107344000000005,
+      0.2855294028116224,
+      -0.04430021027732867,
+      -0.39290434172507366,
+      -0.5714060674419338
+    ],
+    "monte_carlo": [
+      0.45923333333333344,
+      0.4770166666666668,
+      0.44668333333333343,
+      0.2853833333333333,
+      -0.05151666666666667,
+      -0.3904999999999999,
+      -0.5694999999999999
+    ]
+  }
+}

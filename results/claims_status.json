@@ -1,0 +1,16 @@
+{
+  "verdict": "pass",
+  "forbidden_hits": [],
+  "required_outputs": {
+    "summary_json": true,
+    "final_pdf": true,
+    "novelty_map": true,
+    "proof_attack": true
+  },
+  "files_scanned": [
+    "C:\\Users\\wangz\\best of n trajectory transformer\\README.md",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\docs\\claims.md",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\docs\\final_audit.md",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\paper\\main.tex"
+  ]
+}
