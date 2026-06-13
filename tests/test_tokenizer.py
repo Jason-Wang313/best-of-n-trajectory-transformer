@@ -1,6 +1,6 @@
 import numpy as np
 
-from trajectory_transformer_best_of_n.tokenizer import TrajectoryTokenizer
+from trajectory_token_sieve.tokenizer import TrajectoryTokenizer
 
 
 def test_tokenization_round_trip_tokens():

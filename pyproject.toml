@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "trajectory-transformer-best-of-n"
+name = "trajectory-token-sieve"
 version = "0.1.0"
-description = "Synthetic diagnostics for Best-of-N reward-token extremization in Trajectory Transformer style planning."
+description = "Synthetic diagnostics for reward-token tail risk in Trajectory Transformer style planning."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

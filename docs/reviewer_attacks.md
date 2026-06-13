@@ -2,7 +2,7 @@
 
 ## Attack 1: This Is Just Reward Hacking
 
-Response: The repo explicitly connects to Best-of-N reward overoptimization, but the diagnostic is not generic. It tests whether the selected object is a coherent Trajectory Transformer token string: support log-likelihood, maximum prefix surprise, and state/action/reward dynamics consistency are measured before the action sequence is executed.
+Response: The repo connects to reward overoptimization, but the diagnostic is not generic. It tests whether the selected object is a coherent Trajectory Transformer token string: support log-likelihood, maximum prefix surprise, and state/action/reward dynamics consistency are measured before the action sequence is executed.
 
 ## Attack 2: The Model Is Too Small
 
@@ -12,9 +12,9 @@ Response: Correct. The current model is a discretized autoregressive surrogate. 
 
 Response: Plain likelihood regularization is part of the repair, but not the whole repair. The Plan Sieve also checks prefix-level surprise and a trajectory-token consistency condition: decoded next-state tokens must agree with a simulator rollout from decoded state/action tokens.
 
-## Attack 4: Beam Search Is Not I.I.D. Best-of-N
+## Attack 4: Beam Search Candidates Are Not I.I.D.
 
-Response: The exact theorem is stated for i.i.d. Best-of-N. The experiments use sampling as a beam-style stress test because it gives clean finite-N control. The paper does not claim the law exactly describes all deterministic beam implementations.
+Response: The exact identity is stated for i.i.d. score-selected candidates. The experiments use sampling as a beam-style stress test because it gives clean finite-candidate control. The paper does not claim the law exactly describes all deterministic beam implementations.
 
 ## Attack 5: Synthetic Results Are Not Enough
 

@@ -1,4 +1,4 @@
-"""Best-of-N diagnostics for Trajectory Transformer style planning."""
+"""Trajectory-token support diagnostics for reward-token tail audits."""
 
 from .config import ExperimentConfig
 from .environment import ContinuousTrajectory, generate_offline_dataset, simulate_actions

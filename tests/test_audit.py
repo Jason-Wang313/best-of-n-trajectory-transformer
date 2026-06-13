@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from trajectory_transformer_best_of_n.audit import FORBIDDEN_OVERCLAIMS, write_claim_audit
-from trajectory_transformer_best_of_n.config import RESULTS_DIR
+from trajectory_token_sieve.audit import FORBIDDEN_OVERCLAIMS, write_claim_audit
+from trajectory_token_sieve.config import RESULTS_DIR
 
 
 def test_claim_audit_writes_json_and_checks_forbidden_phrases():

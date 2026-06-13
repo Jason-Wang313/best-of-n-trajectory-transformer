@@ -23,7 +23,7 @@ class OutcomeDistribution:
 
 
 def selected_outcome_probabilities(dist: OutcomeDistribution, n: int) -> np.ndarray:
-    """Exact finite-N law for score-selected candidates with uniform tie breaking.
+    """Exact finite-candidate law for score-selected candidates with uniform tie breaking.
 
     For outcome i, distinguish one sampled copy of i. It is selected when no
     other sample has strictly larger score; if m other samples tie its score,

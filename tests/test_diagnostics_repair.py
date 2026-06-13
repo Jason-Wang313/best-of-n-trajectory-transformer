@@ -1,9 +1,9 @@
-from trajectory_transformer_best_of_n.diagnostics import calibrate_support, diagnose_plan, is_supported
-from trajectory_transformer_best_of_n.environment import generate_offline_dataset
-from trajectory_transformer_best_of_n.experiments.core import aggregate_rows, run_variant
-from trajectory_transformer_best_of_n.config import ExperimentConfig
-from trajectory_transformer_best_of_n.model import SmoothedAutoregressiveTT
-from trajectory_transformer_best_of_n.tokenizer import TrajectoryTokenizer
+from trajectory_token_sieve.diagnostics import calibrate_support, diagnose_plan, is_supported
+from trajectory_token_sieve.environment import generate_offline_dataset
+from trajectory_token_sieve.experiments.core import aggregate_rows, run_variant
+from trajectory_token_sieve.config import ExperimentConfig
+from trajectory_token_sieve.model import SmoothedAutoregressiveTT
+from trajectory_token_sieve.tokenizer import TrajectoryTokenizer
 
 
 def test_support_diagnostics_flag_synthetic_out_of_support_plan():

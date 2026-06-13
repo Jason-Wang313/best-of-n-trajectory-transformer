@@ -1,8 +1,8 @@
 import numpy as np
 
-from trajectory_transformer_best_of_n.environment import generate_offline_dataset
-from trajectory_transformer_best_of_n.model import SmoothedAutoregressiveTT
-from trajectory_transformer_best_of_n.tokenizer import TrajectoryTokenizer
+from trajectory_token_sieve.environment import generate_offline_dataset
+from trajectory_token_sieve.model import SmoothedAutoregressiveTT
+from trajectory_token_sieve.tokenizer import TrajectoryTokenizer
 
 
 def test_autoregressive_probability_normalization():
