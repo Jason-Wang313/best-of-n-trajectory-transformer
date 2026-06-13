@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from .config import DOCS_DIR, PAPER_DIR, REPO_ROOT, RESULTS_DIR
@@ -14,7 +15,29 @@ FORBIDDEN_OVERCLAIMS = [
     "benchmark-proven",
     "real robot validated",
     "human validated",
+    "iclr_submission.pdf",
+    "paper-worthy v1",
+    "synthetic v2",
+    "v2.pdf",
 ]
+
+
+def _pdf_pages(path: Path) -> int:
+    if not path.exists():
+        return 0
+    data = path.read_bytes()
+    return len(re.findall(rb"/Type\s*/Page\b", data))
+
+
+def _expanded_claims_pass() -> bool:
+    path = RESULTS_DIR / "expansion" / "claims.json"
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return False
+    return bool(data.get("all_passed"))
 
 
 def scan_claims() -> dict:
@@ -33,9 +56,13 @@ def scan_claims() -> dict:
         for phrase in FORBIDDEN_OVERCLAIMS:
             if phrase in text:
                 hits.append({"file": str(path), "phrase": phrase})
+    final_pdf = PAPER_DIR / "final" / "best of n trajectory transformer-v3.pdf"
     required = {
         "summary_json": (RESULTS_DIR / "summary.json").exists(),
-        "final_pdf": (PAPER_DIR / "final" / "iclr_submission.pdf").exists(),
+        "expansion_metrics": (RESULTS_DIR / "expansion" / "aggregate_metrics.csv").exists(),
+        "expansion_claims_pass": _expanded_claims_pass(),
+        "final_pdf": final_pdf.exists(),
+        "final_pdf_at_least_25_pages": _pdf_pages(final_pdf) >= 25,
         "novelty_map": (DOCS_DIR / "novelty_map.md").exists(),
         "proof_attack": (DOCS_DIR / "proof_attack.md").exists(),
     }

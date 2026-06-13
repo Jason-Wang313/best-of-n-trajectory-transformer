@@ -1,51 +1,42 @@
-# Trajectory-Token Support Sieve
+# Reward-Token Tail Audits for Trajectory Transformer Planning
 
-This repository is a paper-quality first pass at the controlled research question:
+This repository contains the source, experiments, figures, audits, and final build for a submission-ready mechanism paper about Trajectory Transformer planning.
 
-> Can score-only Trajectory Transformer planning push reward-token scores upward while selecting low-support, dynamically inconsistent trajectory-token strings whose realized simulator utility gets worse?
+The paper asks:
 
-The implemented answer is a synthetic but runnable **yes**. The repo does not claim benchmark-scale offline RL performance. It isolates the mechanism in a discretized autoregressive Trajectory Transformer surrogate with the token layout
+> When a planner searches over full state/action/reward trajectory-token strings, does a larger candidate set find better plans, or can it select better-looking reward-token tails whose realized simulator utility is worse?
 
-```text
-(state_token, action_token, reward_token) repeated over the horizon
-```
+The implemented answer is a controlled yes. In the expanded horizon-stress suite, raw score-only selection from 256 candidates raises decoded reward-token return by 5.093 relative to one candidate while lowering realized simulator return by 2.532. The Support-Calibrated Plan Sieve repairs that high-candidate tail by 8.822 realized-return units. The larger four-control run contains a sharper horizon-stress case at 64 candidates: predicted reward rises by 5.572 while realized return falls by 7.553.
 
-and separates internal reward-token score from realized return under a ground-truth simulator.
+## What This Is
+
+- A reproducible Trajectory Transformer-style audit over interleaved `(state, action, reward)` tokens.
+- A full 25-page paper with candidate-count stress, horizon sweeps, context-length ablations, tokenizer-resolution stress, sampling-temperature stress, tail-bias stress, sieve ablations, finite-candidate theory, negative controls, and a reviewer-facing claim boundary.
+- An inspectable autoregressive surrogate, chosen so token likelihoods, prefix surprises, and token/simulator dynamics errors are measurable.
+- A bounded mechanism study, not a benchmark leaderboard or neural Transformer deployment claim.
 
 ## Quick Start
 
 ```bash
 python -m trajectory_token_sieve.experiments.run_smoke
 python -m trajectory_token_sieve.experiments.run_all
+python -m trajectory_token_sieve.experiments.run_expansion_suite
 python -m trajectory_token_sieve.experiments.run_claim_audit
 pytest
+.\scripts\build_paper.ps1
 ```
-
-## What Is Included
-
-- A reproducible offline dataset with support-limited high-return corridors.
-- A smoothed autoregressive trajectory-token model with log-likelihood, prefix surprise, rollout sampling, and reward-token scoring.
-- Score-only candidate selection for candidate counts `{1, 2, 4, 8, 16, 32, 64}`.
-- Metrics for predicted reward, realized return, support log-likelihood, dynamics inconsistency, prefix surprise, candidate diversity, and selected-mode collapse.
-- Controls for in-support planning, out-of-support stress, an anti-aligned scorer, and horizon stress.
-- A repair method, **Support-Calibrated Plan Sieve**, that filters or downweights candidates with low support, surprising prefixes, or inconsistent dynamics and reports when large candidate-count search should be blocked.
-- Exact finite-candidate selected-utility identity with Monte Carlo validation.
-- ICLR-style paper source and a compiled PDF under `paper/final/iclr_submission.pdf`.
 
 ## Main Outputs
 
-After `run_all`, inspect:
-
-- `results/all_results.csv`
-- `results/summary.json`
-- `results/claims_status.json`
-- `figures/reward_extremization.png`
-- `figures/repair_comparison.png`
-- `figures/control_panels.png`
-- `figures/exact_law_validation.png`
-- `docs/final_audit.md`
-- `paper/final/iclr_submission.pdf`
+- `results/summary.json`: primary four-control summary.
+- `results/all_results.csv`: primary per-method aggregate results.
+- `results/expansion/aggregate_metrics.csv`: expanded stress-suite metrics.
+- `results/expansion/claims.json`: numeric audit of headline claims.
+- `results/claims_status.json`: repository-facing claim audit.
+- `figures/`: generated figures used by the paper.
+- `paper/main.tex`: paper source.
+- `paper/final/`: repository-local final PDF artifact.
 
 ## Claim Boundary
 
-This is a controlled synthetic v2. It is designed to make a Trajectory Transformer-specific failure mode measurable and repairable in a small setting. It does not establish top benchmark performance, safety guarantees, or benchmark validity.
+The paper claims a controlled mechanism: score-only candidate selection in a Trajectory Transformer-style token planner can extremize reward tokens while selecting low-support or dynamically inconsistent strings. It does not claim universal failure, benchmark superiority, deployment readiness, or a safety guarantee.

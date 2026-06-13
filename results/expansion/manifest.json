@@ -1,0 +1,15 @@
+{
+  "aggregate_metrics": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\expansion\\aggregate_metrics.csv",
+  "claims": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\expansion\\claims.json",
+  "figures": [
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\candidate_count_tail.png",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\horizon_context_sweep.png",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\tokenizer_temperature_sweep.png",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\context_temperature_risk.png",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\sieve_ablation.png",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\tail_bias_stress.png",
+    "C:\\Users\\wangz\\best of n trajectory transformer\\figures\\exact_law_stress.png"
+  ],
+  "finite_law_stress": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\expansion\\finite_law_stress.csv",
+  "summary": "N=256 predicted gain 5.093, realized change -2.532, sieve repair 8.822; finite-law bad-tail change -1.059."
+}

@@ -24,32 +24,21 @@ The selected expected utility is \(\sum_i u_i \Pr(\hat X_K=i)\).
 
 ## Proof Sketch
 
-Distinguish one sampled copy of outcome \(i\). It is selected if no other sample has strictly larger score. If exactly \(m\) of the other \(K-1\) samples have equal score, then the distinguished copy wins uniform tie-breaking with probability \(1/(m+1)\). The other samples must have either equal or lower score, giving the binomial term. Multiply by \(K p_i\) because any of the \(K\) positions could be the distinguished copy.
+Distinguish one sampled copy of outcome \(i\). It is selected if no other sample has strictly larger score. If exactly \(m\) of the other \(K-1\) samples have equal score, then the distinguished copy wins uniform tie-breaking with probability \(1/(m+1)\). The other samples must have either equal or lower score, giving the binomial term. Multiply by \(Kp_i\) because any of the \(K\) positions could be the distinguished copy.
 
 ## Attacks And Results
 
-1. **Ties between different outcomes.**
-   The formula uses score-level probability \(p_{=i}\), not outcome identity, so ties across outcomes are included.
-
-2. **Duplicate copies of the same outcome.**
-   Duplicate copies are just part of the equal-score group. The distinguished-copy argument still gives uniform tie-breaking over samples.
-
-3. **Continuous scores.**
-   The proposition is stated for finite distributions. Continuous-score analogues follow by replacing score masses with CDF terms, but this repo does not rely on that stronger claim.
-
-4. **Non-i.i.d. beam candidates.**
-   Beam search candidates are dependent. The proposition is used as a finite-candidate score-selection identity, not as a proof for every beam implementation. The paper marks this boundary.
-
-5. **Control optimality.**
-   The proposition says nothing about optimal control. It only characterizes score-selected utility under a candidate distribution.
-
-6. **Numerical edge cases.**
-   Unit tests compare the exact law to Monte Carlo and include a tail-misalignment distribution where increasing candidate count lowers expected selected utility.
+1. **Ties between different outcomes.** The formula uses score-level probability \(p_{=i}\), so ties across outcomes are included.
+2. **Duplicate copies of the same outcome.** Duplicate copies are part of the equal-score group; the distinguished-copy argument still holds.
+3. **Continuous scores.** The proposition is finite-distribution only. Continuous analogues are outside this repo's claim.
+4. **Non-i.i.d. beam candidates.** The proposition is not a deterministic-beam theorem. The manuscript states this boundary.
+5. **Control optimality.** The identity is about score-selected utility under a candidate distribution, not optimal control.
+6. **Numerical edge cases.** The exact law is validated against Monte Carlo and includes harmful and benign high-score tails.
 
 ## Surviving Corollary
 
-If the highest proxy-score tail has lower realized utility than the lower-score mass and its selection probability increases with candidate count, then expected selected utility can decrease. This is a conditional consequence, not a universal monotonicity result.
+If the highest proxy-score tail has lower realized utility than the lower-score mass and its selection probability increases with candidate count, then expected selected utility can decrease. This is conditional, not universal.
 
-## Trajectory Transformer Proposition
+## Trajectory Transformer Mechanism Statement
 
-For an autoregressive model over interleaved \((s,a,r)\) tokens, reward-token selection pressure can increase the probability of selecting low-support prefixes whenever high reward-token probability is available through smoothing, backoff, or model error in rare contexts. This proposition depends on a support-mismatch condition and is documented as a mechanism statement, not a guarantee for all TTs.
+For an autoregressive model over interleaved state/action/reward tokens, reward-token selection pressure can select low-support prefixes or dynamics-inconsistent token strings when high reward-token probability is available through smoothing, rare contexts, or model error. This is a mechanism statement, not a guarantee for all Trajectory Transformers.

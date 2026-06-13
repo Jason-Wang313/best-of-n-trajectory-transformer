@@ -1,0 +1,72 @@
+{
+  "all_passed": true,
+  "claims": {
+    "candidate_tail_predicted_reward_extremizes": {
+      "description": "Increasing candidate count to 256 raises raw decoded reward-token score in horizon stress.",
+      "status": "pass",
+      "threshold": 4.0,
+      "value": 5.093478260869567
+    },
+    "candidate_tail_realized_return_drops": {
+      "description": "The same high-candidate raw selection lowers realized simulator return by more than two return units.",
+      "status": "pass",
+      "threshold": -2.0,
+      "value": -2.5320409977489753
+    },
+    "context_changes_support_risk": {
+      "description": "Autoregressive context length changes high-N support risk.",
+      "status": "pass",
+      "threshold": 0.05,
+      "value": 0.17578125
+    },
+    "finite_law_detects_bad_tail": {
+      "description": "The exact finite-candidate law predicts utility collapse under a bad high-score tail.",
+      "status": "pass",
+      "threshold": -0.7,
+      "value": -1.0594549246782514
+    },
+    "finite_law_keeps_benign_tail_positive": {
+      "description": "The exact law distinguishes a benign high-score tail from a harmful one.",
+      "status": "pass",
+      "threshold": 0.3,
+      "value": 0.6318909849356503
+    },
+    "horizon_changes_realized_tail": {
+      "description": "Horizon changes the raw realized tail at N=64.",
+      "status": "pass",
+      "threshold": 1.0,
+      "value": 12.86316443907979
+    },
+    "sieve_ablation_reduces_token_pathology": {
+      "description": "The full sieve lowers both prefix surprise and token/simulator dynamics error relative to raw selection.",
+      "status": "pass",
+      "threshold": 0.05,
+      "value": 0.09898345618565163
+    },
+    "sieve_repairs_high_candidate_tail": {
+      "description": "The support-calibrated sieve improves realized return at N=256 in horizon stress.",
+      "status": "pass",
+      "threshold": 3.0,
+      "value": 8.822157808516383
+    },
+    "tail_bias_changes_realized_tail": {
+      "description": "Reward/action tail bias changes high-candidate realized return.",
+      "status": "pass",
+      "threshold": 2.0,
+      "value": 2.728637635281693
+    },
+    "temperature_changes_realized_tail": {
+      "description": "Sampling temperature changes high-candidate realized return even when support-risk rates remain saturated.",
+      "status": "pass",
+      "threshold": 3.0,
+      "value": 5.065377448194916
+    },
+    "tokenizer_resolution_changes_dynamics_error": {
+      "description": "Tokenizer resolution changes selected token/simulator dynamics inconsistency.",
+      "status": "pass",
+      "threshold": 0.05,
+      "value": 0.3062204951505851
+    }
+  },
+  "summary": "N=256 predicted gain 5.093, realized change -2.532, sieve repair 8.822; finite-law bad-tail change -1.059."
+}

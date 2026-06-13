@@ -1,29 +1,41 @@
 # Reviewer Attacks
 
-## Attack 1: This Is Just Reward Hacking
+## Attack 1: This Is Just Generic Reward Hacking
 
-Response: The repo connects to reward overoptimization, but the diagnostic is not generic. It tests whether the selected object is a coherent Trajectory Transformer token string: support log-likelihood, maximum prefix surprise, and state/action/reward dynamics consistency are measured before the action sequence is executed.
+Response: The paper connects to reward overoptimization, but the diagnostic is specific to Trajectory Transformer planning. It audits the full interleaved state/action/reward token string and measures prefix surprise plus token/simulator dynamics consistency.
 
 ## Attack 2: The Model Is Too Small
 
-Response: Correct. The current model is a discretized autoregressive surrogate. It is useful for a first mechanism test because every probability and token diagnostic is inspectable. The next required experiment is a neural TT on D4RL-style environments.
+Response: Correct. The paper is a controlled mechanism study using an inspectable autoregressive surrogate. It does not claim neural benchmark validation. The manuscript includes a neural validation protocol as future work.
 
 ## Attack 3: The Repair Is Likelihood Regularization
 
-Response: Plain likelihood regularization is part of the repair, but not the whole repair. The Plan Sieve also checks prefix-level surprise and a trajectory-token consistency condition: decoded next-state tokens must agree with a simulator rollout from decoded state/action tokens.
+Response: Likelihood is only one component. The Plan Sieve separately checks prefix surprise and dynamics consistency. The ablation table reports that likelihood-only wins one realized-return slice while the full sieve better reduces token pathology.
 
-## Attack 4: Beam Search Candidates Are Not I.I.D.
+## Attack 4: More Candidates Are Not Always Harmful
 
-Response: The exact identity is stated for i.i.d. score-selected candidates. The experiments use sampling as a beam-style stress test because it gives clean finite-candidate control. The paper does not claim the law exactly describes all deterministic beam implementations.
+Response: Agreed. The paper reports benign and mixed cases, including the out-of-support control and benign finite-law tail. The claim is conditional tail risk, not universal anti-scaling.
 
-## Attack 5: Synthetic Results Are Not Enough
+## Attack 5: Beam Search Candidates Are Not I.I.D.
 
-Response: Agreed. The repo's final audit labels this as paper-worthy v1 for mechanism and diagnostic only. Benchmark validation is a necessary next step.
+Response: The exact identity is explicitly stated for i.i.d. finite candidate sets. It is used as a selection-law sanity check, not as a theorem for deterministic beam search.
 
-## Attack 6: Oracle Selection Is Unfair
+## Attack 6: The Sieve Loses In One Ablation
 
-Response: The oracle selector is included only as an upper-bound diagnostic. It is never presented as deployable.
+Response: The manuscript reports that loss. The repair claim is made where the audit passes: high-candidate horizon stress at 256 candidates. The loss is framed as a conservative-gate cost.
 
-## Attack 7: Thresholds Might Be Tuned To The Toy Environment
+## Attack 7: Synthetic Results Are Not Enough
 
-Response: Thresholds are calibrated from offline training trajectories by quantiles. The method still needs cross-domain validation; the claim is that the signals are principled enough to test, not that the exact numbers transfer.
+Response: Agreed. The paper claims a reproducible mechanism and audit protocol. Benchmark-scale neural TT validation remains the next required evidence layer.
+
+## Attack 8: The Claim Thresholds Were Chosen After Seeing Results
+
+Response: The claim audit records numeric thresholds and forces unsupported claims to be revised. One proposed temperature-risk claim failed and was replaced by a truthful realized-return sensitivity claim.
+
+## Attack 9: Dynamics Error Uses Simulator Knowledge
+
+Response: In this controlled setting, simulator access is used to evaluate and audit token/simulator mismatch. Deployment would need an environment checker or learned dynamics consistency model.
+
+## Attack 10: The Paper Is Too Similar To A Generic Candidate-Selection Story
+
+Response: The final title, diagnostics, experiments, and claims are all trajectory-token-specific: reward tokens, prefix surprise, state/action/reward consistency, tokenizer resolution, and TT-style decoding are central throughout.

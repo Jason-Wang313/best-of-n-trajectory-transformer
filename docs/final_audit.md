@@ -2,33 +2,32 @@
 
 1. **What is the discovered main thesis?**
 
-   Score-only candidate selection with a Trajectory Transformer-style autoregressive model can extremize reward tokens faster than it improves actual plans. In controlled stress settings, the selected sequence's predicted reward rises with candidate count while support likelihood and dynamics consistency deteriorate, so simulator return can fall.
+   Score-only Trajectory Transformer-style planning can extremize decoded reward tokens while selecting trajectory-token strings whose prefixes are low-support or whose state tokens are dynamically inconsistent with their action tokens. The failure is visible only when the selected object is audited as a full state/action/reward token string.
 
 2. **What is genuinely new?**
 
-   The contribution is not generic reranking. It is a Trajectory Transformer-specific diagnostic that treats the full interleaved state/action/reward token string as the object under selection, measures prefix surprise and token-level dynamics inconsistency, and uses those signals to gate large candidate-count search.
+   The contribution is a Trajectory Transformer-specific audit. It does not merely say that proxy rewards can be overoptimized. It measures prefix surprise, average token support, candidate-set risk, and token/simulator dynamics consistency on interleaved trajectory-token strings.
 
-3. **What proposition/proof survived adversarial checking?**
+3. **What proof survived adversarial checking?**
 
-   The exact finite-candidate selected-utility law for score-selected i.i.d. candidates with uniform tie-breaking survived the proof attack. The corollary is deliberately conditional: increasing the candidate count worsens realized utility when higher proxy-score tails carry lower conditional real utility.
+   The exact finite-candidate selected-utility identity for i.i.d. score-selected candidates with uniform tie-breaking survived proof attacks about duplicate outcomes, score ties, and finite support. The corollary remains conditional: more candidates can lower realized utility when the selected high-score tail has lower true utility.
 
 4. **What is the strongest empirical result?**
 
-   In the `horizon_stress` control, score-only selection changed predicted return by 5.572 from candidate count 1 to 64 while realized return changed by -7.553. This is synthetic evidence for reward-token extremization, not a benchmark claim.
+   The primary four-control run shows the sharpest horizon-stress case: candidate count 64 raises predicted reward by 5.572 while realized return changes by -7.553. The expanded run extends candidate-count stress to 256 and shows raw predicted reward gain of 5.093 with realized return change of -2.532.
 
 5. **What is the strongest repair result?**
 
-   The strongest repair result is in `horizon_stress`: at candidate count 64, the Support-Calibrated Plan Sieve improved realized return over score-only selection by 5.455 or blocked unsafe candidate sets when support diagnostics crossed calibration thresholds.
+   In the expanded horizon-stress suite at candidate count 256, the Support-Calibrated Plan Sieve improves realized return over raw score-only selection by 8.822.
 
 6. **What are the biggest weaknesses?**
 
-   The experiments are synthetic, the model is an n-gram surrogate rather than a trained neural Transformer, and the repair thresholds are calibrated on generated offline data. Benchmark validation on D4RL-style environments and a neural TT implementation is the main missing evidence.
+   The experiments are synthetic, the model is an inspectable autoregressive surrogate rather than a trained neural Transformer, and the repair thresholds are calibrated on generated offline data. Neural TT benchmark validation remains the main missing evidence.
 
-7. **Is this paper-worthy v1, needs stronger experiments, needs benchmark validation, or requires redesign?**
+7. **Is this submission-ready under the project standard?**
 
-   Paper-worthy v1 for the mechanism and diagnostic, but it needs stronger experiments and benchmark validation before the empirical claim should be treated as field-level evidence.
+   Yes for a bounded mechanism paper: the manuscript is 25 pages, includes substantial new experiments, reports ablations and negative controls, avoids generic duplicate framing, states limitations clearly, builds from source, and is covered by a claim audit.
 
-8. **Where exactly is the final PDF saved?**
+8. **Where is the final PDF saved?**
 
-   Repository copy: `paper\final\iclr_submission.pdf`
-   Downloads copy: `C:\Users\wangz\Downloads\iclr_submission_trajectory_token_sieve.pdf`
+   Repository copy: `paper/final/` as produced by `scripts/build_paper.ps1`.
