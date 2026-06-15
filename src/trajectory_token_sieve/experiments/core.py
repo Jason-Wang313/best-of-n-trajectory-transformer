@@ -236,7 +236,7 @@ def write_final_audit(summary: dict, pdf_repo_path: Path, pdf_download_path: Pat
         "",
         "   The experiments are synthetic, the model is an n-gram surrogate rather than a trained neural Transformer, and the repair thresholds are calibrated on generated offline data. Benchmark validation on D4RL-style environments and a neural TT implementation is the main missing evidence.",
         "",
-        "7. **Is this paper-worthy v1, needs stronger experiments, needs benchmark validation, or requires redesign?**",
+        "7. **Is this submission-ready as a bounded mechanism study, or does it need stronger experiments, neural benchmark validation, or redesign?**",
         "",
         "   Paper-worthy v1 for the mechanism and diagnostic, but it needs stronger experiments and benchmark validation before the empirical claim should be treated as field-level evidence.",
         "",

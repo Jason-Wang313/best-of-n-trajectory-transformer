@@ -8,6 +8,7 @@
 - In the larger four-control run, the horizon-stress control raises predicted reward by 5.572 from candidate count 1 to 64 while realized return changes by -7.553.
 - Prefix surprise and token/simulator dynamics error expose failures that are hidden if one only reads decoded reward-token return.
 - Context length, tokenizer resolution, sampling temperature, and reward/action tail bias materially change high-candidate diagnostics.
+- On Gymnasium Pendulum-v1, raw score-only selection at 64 candidates extremizes decoded reward tokens without improving true return, underperforms a behavior-policy baseline, and is repaired in that slice by a support-gated behavior fallback.
 - The exact finite-candidate selected-utility identity matches Monte Carlo and distinguishes harmful high-score tails from benign high-score tails.
 
 ## Not Claimed
@@ -22,4 +23,4 @@
 
 ## Audit Rule
 
-The claim audit scans the README, paper, final audit, and this file for forbidden overclaims and stale artifact references. It also checks for the expanded results, expanded claim JSON, novelty map, proof audit, and final repository PDF.
+The claim audit scans the README, paper, final audit, and this file for forbidden overclaims and stale artifact references. It also checks for the expanded results, Pendulum benchmark outputs, claim JSON files, novelty map, proof audit, and final repository PDF.

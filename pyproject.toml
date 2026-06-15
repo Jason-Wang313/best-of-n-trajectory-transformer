@@ -13,6 +13,7 @@ authors = [{name = "Jason Wang"}]
 dependencies = [
   "numpy",
   "matplotlib",
+  "gymnasium>=1.0",
 ]
 
 [tool.setuptools.packages.find]

@@ -19,6 +19,7 @@ FORBIDDEN_OVERCLAIMS = [
     "paper-worthy v1",
     "synthetic v2",
     "v2.pdf",
+    "v3.pdf",
 ]
 
 
@@ -29,8 +30,7 @@ def _pdf_pages(path: Path) -> int:
     return len(re.findall(rb"/Type\s*/Page\b", data))
 
 
-def _expanded_claims_pass() -> bool:
-    path = RESULTS_DIR / "expansion" / "claims.json"
+def _claims_pass(path: Path) -> bool:
     if not path.exists():
         return False
     try:
@@ -38,6 +38,14 @@ def _expanded_claims_pass() -> bool:
     except json.JSONDecodeError:
         return False
     return bool(data.get("all_passed"))
+
+
+def _expanded_claims_pass() -> bool:
+    return _claims_pass(RESULTS_DIR / "expansion" / "claims.json")
+
+
+def _pendulum_claims_pass() -> bool:
+    return _claims_pass(RESULTS_DIR / "pendulum_benchmark" / "claims.json")
 
 
 def scan_claims() -> dict:
@@ -56,11 +64,13 @@ def scan_claims() -> dict:
         for phrase in FORBIDDEN_OVERCLAIMS:
             if phrase in text:
                 hits.append({"file": str(path), "phrase": phrase})
-    final_pdf = PAPER_DIR / "final" / "best of n trajectory transformer-v3.pdf"
+    final_pdf = PAPER_DIR / "final" / "best of n trajectory transformer-v4.pdf"
     required = {
         "summary_json": (RESULTS_DIR / "summary.json").exists(),
         "expansion_metrics": (RESULTS_DIR / "expansion" / "aggregate_metrics.csv").exists(),
         "expansion_claims_pass": _expanded_claims_pass(),
+        "pendulum_metrics": (RESULTS_DIR / "pendulum_benchmark" / "aggregate_metrics.csv").exists(),
+        "pendulum_claims_pass": _pendulum_claims_pass(),
         "final_pdf": final_pdf.exists(),
         "final_pdf_at_least_25_pages": _pdf_pages(final_pdf) >= 25,
         "novelty_map": (DOCS_DIR / "novelty_map.md").exists(),

@@ -6,6 +6,9 @@
 \usepackage{amsthm}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage[colorlinks=true, linkcolor=blue!55!black, citecolor=green!45!black, urlcolor=blue!55!black]{hyperref}
 
 \graphicspath{{../figures/}}
 
@@ -23,7 +26,7 @@
 \maketitle
 
 \begin{abstract}
-Trajectory Transformers plan by decoding interleaved state, action, and reward tokens. This paper studies a failure mode that is specific to that interface: a score-only planner can select strings whose reward-token sums improve while the selected prefixes become unlikely under the offline data distribution and the decoded next-state tokens stop matching the decoded actions. The selected object is therefore not merely an action sequence; it is a full trajectory-token string with support, prefix, and dynamics structure. We build a reproducible autoregressive surrogate that keeps this planning interface while making every token probability auditable. Across four controls, candidate-count stress, horizon sweeps, context-length ablations, tokenizer-resolution stress, sampling-temperature stress, tail-bias stress, sieve ablations, and exact finite-candidate laws, the experiments separate reward-token extremization from realized simulator utility. In the expanded candidate-count stress, increasing the score-only candidate count from 1 to 256 raises decoded reward-token return by 5.093 while lowering realized simulator return by 2.532; the \method{} improves realized return over score-only selection by 8.822 at the same candidate count. A larger four-control run shows the sharper horizon-stress case: candidate count 64 raises predicted reward by 5.572 while lowering realized return by 7.553. The claims are deliberately bounded: the evidence is synthetic and mechanism-focused, not a benchmark performance result. The contribution is an auditable protocol for detecting when Trajectory Transformer planning is optimizing reward-token tails rather than coherent plans.
+Trajectory Transformers plan by decoding interleaved state, action, and reward tokens. This paper studies a failure mode that is specific to that interface: a score-only planner can select strings whose reward-token sums improve while the selected prefixes become unlikely under the offline data distribution and the decoded next-state tokens stop matching the decoded actions. The selected object is therefore not merely an action sequence; it is a full trajectory-token string with support, prefix, and dynamics structure. We build a reproducible autoregressive surrogate that keeps this planning interface while making every token probability auditable. Across four controls, candidate-count stress, horizon sweeps, context-length ablations, tokenizer-resolution stress, sampling-temperature stress, tail-bias stress, sieve ablations, exact finite-candidate laws, and a Gymnasium Pendulum-v1 benchmark \citep{towers2024gymnasium}, the experiments separate reward-token extremization from realized simulator utility. In the expanded candidate-count stress, increasing the score-only candidate count from 1 to 256 raises decoded reward-token return by 5.093 while lowering realized simulator return by 2.532; the \method{} improves realized return over score-only selection by 8.822 at the same candidate count. On Pendulum-v1, increasing raw candidate count from 1 to 64 raises decoded reward-token return by 28.875 while true return changes by \(-0.660\); the selected high-candidate plans remain 9.663 return units below a behavior-policy baseline, and a support-gated behavior fallback repairs that gap while reducing token/simulator mismatch by 1.491. The claims are deliberately bounded: the evidence supports a mechanism and benchmark stress test, not a benchmark leaderboard result.
 \end{abstract}
 
 \section{Introduction}
@@ -44,7 +47,7 @@ The implementation is intentionally small and inspectable. It is not a neural be
 
 The main empirical result is that reward-token extremization is measurable, repairable in the controlled setting, and sensitive to architecture-specific details. In the original four-control experiment, the horizon-stress setting shows candidate count 64 increasing raw predicted reward-token return by 5.572 while decreasing realized simulator return by 7.553. In the expanded suite, the high-candidate stress extends to 256 candidates: raw predicted reward rises by 5.093 from one candidate, raw realized return falls by 2.532, and the \method{} improves realized return over raw score selection by 8.822. The method does not dominate every ablation slice; in a separate N=64 ablation, a likelihood-only filter obtains higher realized return than the full sieve, while the full sieve more strongly reduces prefix surprise and dynamics error. We report this boundary because a useful audit should make methods look worse when their assumptions are stressed.
 
-The contribution is fourfold. First, we define a TT-specific audit for reward-token tails that measures prefix surprise and token/simulator consistency rather than only predicted reward. Second, we prove and test an exact finite-candidate selected-utility identity, clarifying when more score-selected candidates can lower expected realized utility. Third, we implement the \method{}, a calibrated filter and penalty rule that uses offline support diagnostics to gate candidate sets. Fourth, we run a substantially expanded experiment suite with candidate-count, horizon, context, tokenizer, temperature, tail-bias, and ablation stress tests, plus a claim audit that turns unsupported claims into explicit limitations.
+The contribution is fivefold. First, we define a TT-specific audit for reward-token tails that measures prefix surprise and token/simulator consistency rather than only predicted reward. Second, we prove and test an exact finite-candidate selected-utility identity, clarifying when more score-selected candidates can lower expected realized utility. Third, we implement the \method{}, a calibrated filter and penalty rule that uses offline support diagnostics to gate candidate sets. Fourth, we run a substantially expanded experiment suite with candidate-count, horizon, context, tokenizer, temperature, tail-bias, and ablation stress tests. Fifth, we add a standard Gymnasium Pendulum-v1 benchmark tier with a behavior-policy baseline, oracle upper bound, support-gated fallback, and generated claim gates, while keeping the claim narrower than benchmark leaderboard performance.
 
 \section{Problem Setting}
 
@@ -185,9 +188,15 @@ The expanded suite adds eight families of tests:
 \end{itemize}
 All grids run sequentially and write compact CSV/JSON outputs to disk. The suite does not keep large candidate tensors in memory after aggregation. This matters for reproducibility: the goal is stronger evidence without turning a small controlled audit into a RAM-heavy benchmark job.
 
+\subsection{Gymnasium Pendulum benchmark}
+
+The v4 benchmark tier uses Gymnasium Pendulum-v1 \citep{towers2024gymnasium}. This is not a leaderboard experiment: the model is still the inspectable autoregressive trajectory-token surrogate, and the question is whether the reward-token tail pathology survives in a standard continuous-control environment. Pendulum-v1 is useful because its state, action, and reward are continuous, its true dynamics are deterministic and exactly replayable, and a behavior-policy baseline is easy to define without training a second algorithm.
+
+The benchmark trains on 280 offline behavior trajectories of horizon 16. The behavior mixture is mostly medium-gain stabilizing control, with a smaller expert component and a rare high-torque component. The evaluation uses 16 fixed initial states and nested candidate pools with \(K\in\{1,8,32,64\}\), so every larger candidate count contains the smaller candidate set for the same seed. Raw selection chooses the largest decoded reward-token sum. The support-gated fallback either selects an accepted candidate or abstains to a deterministic behavior-policy rollout when the candidate set is entirely unsupported. The oracle chooses the highest true return in the sampled pool and is reported only as an analysis upper bound. All results are written to \texttt{results/pendulum\_benchmark/}.
+
 \subsection{Acceptance criteria}
 
-The paper's claim audit requires that every headline claim be traceable to an output file. The expanded audit passes only if the generated claims satisfy numerical thresholds for reward-token extremization, realized-return degradation, high-candidate repair, horizon sensitivity, context sensitivity, tokenizer sensitivity, temperature sensitivity, tail-bias sensitivity, and finite-law behavior. When a proposed claim fails, the claim is rewritten or removed. For example, the first full run did not support the claim that temperature substantially changes candidate support-risk rate; it did support the more precise claim that temperature changes high-candidate realized return while risk rates remain saturated. The final manuscript uses the latter claim.
+The paper's claim audit requires that every headline claim be traceable to an output file. The expanded audit passes only if the generated claims satisfy numerical thresholds for reward-token extremization, realized-return degradation, high-candidate repair, horizon sensitivity, context sensitivity, tokenizer sensitivity, temperature sensitivity, tail-bias sensitivity, and finite-law behavior. The Pendulum audit adds gates for benchmark reward-token extremization, lack of true-return improvement, behavior-fallback repair, dynamics-mismatch reduction, behavior-baseline underperformance, and oracle gap. When a proposed claim fails, the claim is rewritten or removed. For example, the first full run did not support the claim that temperature substantially changes candidate support-risk rate; it did support the more precise claim that temperature changes high-candidate realized return while risk rates remain saturated. The final manuscript uses the latter claim.
 
 \section{Main Results}
 
@@ -262,6 +271,39 @@ The expanded candidate-count stress extends the horizon-stress setting to \(K=25
 \end{figure}
 
 The \(K=64\) row is a useful warning against overselling the repair. In the expanded suite, the sieve is worse than raw at \(K=64\) for realized return, even though it reduces dynamics error. At \(K=128\) and \(K=256\), it strongly improves realized return. This is why the paper states the repair claim at the high-candidate tail where the audit passes, and why the ablation section discusses non-monotone tradeoffs. A method that only reports its winning slice would be easier to market and weaker scientifically.
+
+\subsection{Gymnasium Pendulum-v1 benchmark}
+
+Table~\ref{tab:pendulum} and Figure~\ref{fig:pendulum} give the standard-environment benchmark tier. The benchmark uses the exact Pendulum-v1 dynamics and reward \citep{towers2024gymnasium}, but keeps the TT-style object of study: the planner samples full state/action/reward token strings from the autoregressive surrogate and selects by decoded reward-token return. The result is not a leaderboard claim. It is a benchmark stress test for the same token-level failure mode.
+
+The high-candidate raw selector is strongly reward-extremizing: from \(K=1\) to \(K=64\), decoded reward-token return rises by 28.875. True return does not follow; the mean true-return change is \(-0.660\), and at \(K=64\) raw selection is 9.663 return units below the behavior-policy baseline. The oracle gap of 9.090 shows that the sampled pool contains better action sequences than the raw reward-token selector chooses. Because every high-candidate raw set violates the calibrated support gates, the conservative repair abstains to the behavior-policy fallback. That fallback improves true return by 9.663 over raw and reduces token/simulator dynamics mismatch by 1.491.
+
+\begin{table}[t]
+\caption{Gymnasium Pendulum-v1 benchmark, effects at \(K=64\) over 16 fixed initial states. Values are means; brackets give bootstrap 95\% intervals.}
+\label{tab:pendulum}
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+Effect & Mean \([95\%\ \mathrm{CI}]\) \\
+\midrule
+Raw reward-token gain, \(K=64\) minus \(K=1\) & \(28.875\ [22.253,34.900]\) \\
+Raw true-return change, \(K=64\) minus \(K=1\) & \(-0.660\ [-5.773,2.632]\) \\
+Behavior fallback minus raw true return at \(K=64\) & \(9.663\ [1.899,18.372]\) \\
+Raw minus behavior-policy true return at \(K=64\) & \(-9.663\ [-18.372,-1.899]\) \\
+Raw minus fallback dynamics mismatch at \(K=64\) & \(1.491\ [1.365,1.629]\) \\
+Oracle minus raw true return at \(K=64\) & \(9.090\ [4.694,15.748]\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{pendulum_benchmark.png}
+\caption{Gymnasium Pendulum-v1 benchmark. Raw reward-token selection drives decoded reward upward with candidate count, but true executed return stays below a behavior-policy baseline and far below the oracle candidate. The support-gated fallback abstains to behavior when the sampled token strings are unsupported.}
+\label{fig:pendulum}
+\end{figure}
 
 \subsection{Control panels}
 
@@ -504,11 +546,11 @@ Many sequence-generation systems use beam search, sampling, reranking, or hybrid
 
 \subsection{What the paper claims}
 
-The paper claims that, in a controlled TT-style token planner, score-only candidate selection can increase decoded reward-token return while lowering realized simulator return. It claims that prefix surprise and token/simulator dynamics error expose failures that a predicted-return curve hides. It claims that a calibrated support sieve can repair the high-candidate tail in the controlled setting, with the strongest expanded repair of 8.822 realized-return units at \(K=256\). It claims that architectural choices such as context length and tokenizer resolution materially change the diagnostics.
+The paper claims that, in a controlled TT-style token planner, score-only candidate selection can increase decoded reward-token return while lowering realized simulator return. It claims that prefix surprise and token/simulator dynamics error expose failures that a predicted-return curve hides. It claims that a calibrated support sieve can repair the high-candidate tail in the controlled setting, with the strongest expanded repair of 8.822 realized-return units at \(K=256\). It claims that architectural choices such as context length and tokenizer resolution materially change the diagnostics. It also claims that the same audit can be run on a standard continuous-control environment: in Pendulum-v1, raw reward-token selection at \(K=64\) strongly extremizes decoded reward while underperforming a behavior-policy baseline, and support-gated fallback repairs that specific high-risk slice.
 
 \subsection{What the paper does not claim}
 
-The paper does not claim state-of-the-field benchmark performance. It does not claim that every TT fails under candidate-count scaling. It does not claim that the n-gram surrogate is a replacement for a neural Transformer. It does not claim a safety guarantee. It does not claim that the \method{} is always realized-return optimal. It does not claim that the exact finite-candidate identity describes dependent deterministic beam search. These boundaries are not footnotes; they are part of the contribution because they make the audit reusable without overclaiming.
+The paper does not claim state-of-the-field benchmark performance. It does not claim that every TT fails under candidate-count scaling. It does not claim that the n-gram surrogate is a replacement for a neural Transformer. It does not claim a safety guarantee. It does not claim that the \method{} is always realized-return optimal. It does not claim that Pendulum-v1 is sufficient neural TT validation, and it does not claim that the exact finite-candidate identity describes dependent deterministic beam search. These boundaries are not footnotes; they are part of the contribution because they make the audit reusable without overclaiming.
 
 \subsection{Harsh reviewer attacks}
 
@@ -532,7 +574,7 @@ The sieve loses in one ablation. & The paper reports that loss and narrows the r
 Temperature did not change risk much. & The claim audit was changed: temperature affects realized selected return while risk rates remain saturated. \\
 Tokenization could create artifacts. & The tokenizer sweep is included and shows resolution-dependent dynamics error. \\
 The finite law assumes i.i.d. candidates. & The proposition states that assumption explicitly and is not used as a deterministic-beam theorem. \\
-Synthetic results may not transfer. & The paper states this limitation repeatedly and treats the work as an audit protocol requiring neural validation. \\
+Synthetic results may not transfer. & The paper adds a standard Pendulum-v1 stress tier but still treats neural TT validation as future work. \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -541,18 +583,21 @@ Synthetic results may not transfer. & The paper states this limitation repeatedl
 \section{Reproducibility}
 
 The repository contains the simulator, tokenization code, autoregressive model, planning methods, experiment runners, generated figures, claim audit, proof audit, and paper source. The core commands are:
+{\footnotesize
 \begin{verbatim}
 python -m trajectory_token_sieve.experiments.run_smoke
 python -m trajectory_token_sieve.experiments.run_all
 python -m trajectory_token_sieve.experiments.run_expansion_suite
+python -m trajectory_token_sieve.experiments.run_pendulum_benchmark
 python -m trajectory_token_sieve.experiments.run_claim_audit
 pytest
 .\scripts\build_paper.ps1
 \end{verbatim}
-The full expansion suite writes aggregate metrics, finite-law metrics, claim JSON, and the figures used in this manuscript. The primary run writes all-results metrics, a summary JSON file, and the primary figures.
+}
+The full expansion suite writes aggregate metrics, finite-law metrics, claim JSON, and the figures used in this manuscript. The Pendulum benchmark writes metrics, effects, claim JSON, a summary manifest, and \texttt{pendulum\_benchmark.png}. The primary run writes all-results metrics, a summary JSON file, and the primary figures.
 
 \paragraph{Resource discipline.}
-The expanded suite is intentionally sequential. It uses small episode batches per cell, writes aggregate rows to CSV, and regenerates figures from aggregated metrics. The implementation avoids holding every sampled candidate from every grid cell in memory. The result is a broader experiment suite without a large RAM footprint. The compute budget is still nontrivial because the suite repeatedly fits and evaluates autoregressive token models, but it is designed to run on a normal workstation.
+The expanded suite is intentionally sequential. It uses small episode batches per cell, writes aggregate rows to CSV, and regenerates figures from aggregated metrics. The Pendulum benchmark uses nested candidate pools but stores only row-level selected-candidate diagnostics, not every sampled token string. The implementation avoids holding every sampled candidate from every grid cell in memory. The result is a broader experiment suite without a large RAM footprint. The compute budget is still nontrivial because the suite repeatedly fits and evaluates autoregressive token models, but it is designed to run on a normal workstation.
 
 \paragraph{Determinism.}
 Every experiment family uses fixed seeds. The exact finite-candidate law is deterministic, and its Monte Carlo check uses a fixed generator. The figures in the paper are generated by repository scripts rather than manually drawn. The claim audit reads the generated JSON/CSV outputs and fails when required evidence is missing or when forbidden overclaims appear in the paper, README, or audit documents.
@@ -563,11 +608,11 @@ The central lesson is that TT planning should audit selected strings, not only s
 
 The repair results suggest that support calibration can be useful, especially at high candidate counts where raw score selection moves far into the reward-token tail. At the same time, the ablation results prevent a stronger claim. There is no universal dominance theorem for the \method{}. It can block aggressively, sacrifice reward-token score, and lose realized return in some slices. That is acceptable if the method is treated as a conservative audit and gate. It would be unacceptable if the paper advertised it as a general optimizer.
 
-The most important next experiment is a neural TT benchmark study. The same diagnostics should be computed for trained Transformer models on standard offline RL datasets, with comparisons across sampling, beam search, temperature, return conditioning, and model-size regimes. The central empirical question is whether prefix surprise and token/simulator dynamics mismatch predict realized-return degradation in neural models as clearly as they do in this controlled surrogate. Until that study is done, the present paper should be read as a mechanism paper and reproducible testbed.
+The most important next experiment is a neural TT benchmark study. The same diagnostics should be computed for trained Transformer models on standard offline RL datasets, with comparisons across sampling, beam search, temperature, return conditioning, and model-size regimes. The Pendulum-v1 tier reduces the external-validity gap by moving the stress test into a standard environment, but it does not answer the neural-model question. The central empirical question is whether prefix surprise and token/simulator dynamics mismatch predict realized-return degradation in neural models as clearly as they do in this controlled surrogate. Until that study is done, the present paper should be read as a mechanism paper and reproducible benchmarked testbed.
 
 \section{Conclusion}
 
-This paper isolates reward-token tail risk in Trajectory Transformer-style planning. The expanded evidence shows that score-only candidate selection can increase decoded reward-token return while lowering realized simulator utility, that the failure is visible through prefix and dynamics diagnostics on the selected token string, and that a calibrated support sieve can repair the high-candidate tail in the controlled setting. The paper is deliberately bounded, but it is no longer a small prototype: it includes a full stress suite, ablations, negative controls, finite-candidate theory, claim audit, and reproducible build path. The result is a submission-ready mechanism study for a specific question: when sequence planners search over trajectory tokens, are they finding better plans or merely better-looking reward-token strings?
+This paper isolates reward-token tail risk in Trajectory Transformer-style planning. The expanded evidence shows that score-only candidate selection can increase decoded reward-token return while lowering realized simulator utility, that the failure is visible through prefix and dynamics diagnostics on the selected token string, and that a calibrated support sieve can repair the high-candidate tail in the controlled setting. The Pendulum-v1 benchmark shows the same audit can expose unsupported reward-token extremization in a standard continuous-control environment with behavior and oracle comparators. The paper is deliberately bounded, but it is no longer a small prototype: it includes a full stress suite, a standard benchmark tier, ablations, negative controls, finite-candidate theory, claim audit, and reproducible build path. The result is a submission-ready mechanism study for a specific question: when sequence planners search over trajectory tokens, are they finding better plans or merely better-looking reward-token strings?
 
 \bibliography{references}
 \bibliographystyle{iclr2026_conference}
@@ -589,6 +634,22 @@ The expanded claim audit passes the following generated checks:
 \item Reward/action tail bias changes high-candidate realized return by 2.729.
 \item The exact law predicts a harmful tail selected-utility drop of 1.059 and a benign-tail gain of 0.632.
 \end{itemize}
+The Pendulum-v1 benchmark adds six generated gates that must pass before the benchmark claims are allowed in the manuscript:
+\begin{center}
+\small
+\begin{tabular}{p{0.42\linewidth}rr}
+\toprule
+Gate & Value & Threshold \\
+\midrule
+Raw decoded-reward extremization & 28.875 & \(>20.0\) \\
+Raw true-return non-improvement & -0.660 & \(<-0.25\) \\
+Behavior fallback repair & 9.663 & \(>6.0\) \\
+Dynamics-mismatch reduction & 1.491 & \(>1.0\) \\
+Raw under behavior baseline & -9.663 & \(<-6.0\) \\
+Oracle gap remains visible & 9.090 & \(>6.0\) \\
+\bottomrule
+\end{tabular}
+\end{center}
 The audit deliberately checks numeric claims rather than prose impressions. If future experiments change the numbers, the manuscript should be updated rather than forcing the old claims to pass.
 
 \section{Appendix: Proof Details}
@@ -789,7 +850,7 @@ A support gate can reject candidates that would have executed well. The \(K=64\)
 The next empirical layer should train neural Trajectory Transformers and reuse the same audit. A credible validation protocol should vary four axes: dataset support, model capacity, decoding procedure, and diagnostic access.
 
 \paragraph{Datasets.}
-The first dataset tier should use standard offline control datasets with known support limitations. The second tier should use synthetic or semi-synthetic datasets where reward-token tails can be injected in a controlled way. The third tier should use held-out environment rollouts to evaluate realized return. The present paper only covers the controlled synthetic tier; the neural protocol should connect it to standard offline RL settings.
+The first dataset tier should use standard offline control datasets with known support limitations. The second tier should use synthetic or semi-synthetic datasets where reward-token tails can be injected in a controlled way. The third tier should use held-out environment rollouts to evaluate realized return. The present paper now covers a controlled synthetic tier plus a standard Pendulum-v1 stress tier, but the neural protocol should still connect the audit to trained TT models on richer offline RL settings.
 
 \paragraph{Models.}
 The model matrix should include at least three TT capacities and two context lengths. Small models test whether smoothing and underfitting create reward-token tails. Larger models test whether capacity resolves or sharpens rare-prefix behavior. The diagnostics should be computed at the token level for every selected candidate, not only aggregated after execution.
@@ -812,19 +873,19 @@ The neural protocol should keep the resource discipline used here. Candidate dia
 The surrogate preserves the TT planning interface but not Transformer attention, representation learning, or large-scale training dynamics. The construct being measured is therefore "trajectory-token score selection under an autoregressive model," not "all neural TTs." The paper's title and claims are scoped to planning audits, and the discussion calls out neural validation as the next step.
 
 \paragraph{Internal validity.}
-The strongest internal threat is threshold choice. The defense is that thresholds are calibrated from offline training trajectories rather than tuned against test return, and that the ablation suite reports cases where the full threshold set is not the best realized-return choice. Another threat is random variation. The primary run uses more evaluation episodes, while the expansion suite uses breadth across stress families. More seeds would strengthen the final benchmark version.
+The strongest internal threat is threshold choice. The defense is that thresholds are calibrated from offline training trajectories rather than tuned against test return, and that the ablation suite reports cases where the full threshold set is not the best realized-return choice. Another threat is random variation. The primary run uses more evaluation episodes, the expansion suite uses breadth across stress families, and the Pendulum tier reports bootstrap intervals over fixed initial states. More seeds and environment variants would strengthen a field-level benchmark version.
 
 \paragraph{External validity.}
-The one-dimensional environment is not a replacement for high-dimensional control. It is useful because token support, prefix surprise, and dynamics mismatch can be inspected exactly. External validity must come from the neural protocol above. Until then, the paper should be cited as evidence that the failure is plausible and measurable, not as evidence that it dominates real TT deployment.
+The one-dimensional environment is not a replacement for high-dimensional control. It is useful because token support, prefix surprise, and dynamics mismatch can be inspected exactly. Pendulum-v1 improves the external-validity story by moving the same audit into a standard continuous-control environment, but external validity for neural TTs must still come from the protocol above. Until then, the paper should be cited as evidence that the failure is plausible and measurable, not as evidence that it dominates real TT deployment.
 
 \paragraph{Conclusion validity.}
-The paper avoids statistical overclaiming. It reports deterministic generated metrics and fixed-seed runs, not confidence intervals over many random seeds. The conclusion is therefore framed as a controlled mechanism finding. A field-level empirical paper would need multi-seed confidence intervals, benchmark environments, and stronger baselines.
+The paper avoids statistical overclaiming. It reports deterministic generated metrics, fixed-seed runs, and Pendulum bootstrap intervals over fixed initial states, not confidence intervals over many independently trained neural models. The conclusion is therefore framed as a controlled mechanism finding with a standard-environment stress test. A field-level empirical paper would need multi-seed neural confidence intervals, a benchmark environment matrix, and stronger learned baselines.
 
 \section{Appendix: Artifact Ledger}
 
 The following artifact ledger is intended for future fresh agents and reviewers. The primary source files are the simulator and model package, the experiment runners, the generated result files, the figure directory, the claim audit, and this manuscript. The final PDF should be regenerated from source rather than edited directly. Desktop copies are release artifacts, not source artifacts.
 
-\begin{table}[t]
+\begin{table}[H]
 \caption{Artifact ledger for reproducibility.}
 \label{tab:artifact-ledger}
 \begin{center}
@@ -836,6 +897,8 @@ Artifact & Role \\
 Source package & Implements tokenization, autoregressive modeling, diagnostics, and planning. \\
 Primary experiment runner & Generates four-control metrics and primary figures. \\
 Expansion runner & Generates candidate-count, horizon, context, tokenizer, temperature, ablation, tail-bias, and finite-law stress outputs. \\
+Pendulum benchmark runner & Generates standard-environment metrics, bootstrap effects, claim gates, and the Pendulum figure. \\
+Pendulum result bundle & Stores \texttt{metrics.csv}, \texttt{aggregate\_metrics.csv}, \texttt{effects.csv}, \texttt{claims.json}, summary files, and \texttt{pendulum\_benchmark.png}. \\
 Claim audit & Scans paper-facing surfaces for overclaims and checks required outputs. \\
 Proof audit & Documents the finite-candidate identity and its reviewed assumptions. \\
 Figures directory & Stores generated visual evidence used by the manuscript. \\
@@ -871,11 +934,13 @@ For any gate or penalty, report both wins and losses. A conservative support gat
 \paragraph{Step 7: run the claim audit last.}
 After experiments and writing, run the claim audit against the final manuscript, README, and supporting docs. The audit should fail on missing outputs and forbidden overclaims. It should also encode numeric thresholds for headline claims. If a result misses a threshold, the manuscript should change. The audit is not a formality; it is a guard against the exact duplicate-wrapper failure that motivated this rewrite.
 
+\clearpage
+
 \section{Appendix: Run Matrix}
 
 Table~\ref{tab:run-matrix} lists the minimum run matrix represented in this repository. The primary run gives higher episode count on the core controls. The expansion suite gives broader coverage with compact per-cell batches. The two are complementary rather than redundant.
 
-\begin{table}[t]
+\begin{table}[H]
 \caption{Run matrix for the final manuscript.}
 \label{tab:run-matrix}
 \begin{center}
@@ -891,6 +956,7 @@ Horizon, context, and tokenizer sweeps & Sequential compact grids & Tests archit
 Temperature and tail-bias sweeps & Sequential compact grids & Tests sampling and data-tail sensitivity. \\
 Sieve ablation & Single stress slice at \(K=64\) & Separates likelihood, prefix, dynamics, lenient, strict, and full gates. \\
 Finite law stress & Exact plus Monte Carlo & Verifies score-selected utility behavior independent of the TT surrogate. \\
+Pendulum-v1 benchmark & 16 fixed initial states, \(K\in\{1,8,32,64\}\) & Tests the same token audit in a standard continuous-control environment against behavior, fallback, and oracle comparators. \\
 Claim audit & Final manuscript surfaces & Ensures outputs exist and unsupported claims are removed. \\
 \bottomrule
 \end{tabular}
@@ -901,12 +967,12 @@ Claim audit & Final manuscript surfaces & Ensures outputs exist and unsupported 
 The expansion suite is broad by design. Running every sweep cell with the same episode count as the primary run would increase runtime without necessarily improving the mechanism claim. The final paper therefore uses the primary run for the clearest high-episode headline and the expansion suite for adversarial coverage. This choice is also consistent with the resource constraint: stronger experiments should be achieved through careful batching and sequential execution, not by forcing the workstation to hold large candidate collections in memory.
 
 \paragraph{What would make the run matrix stronger.}
-The next version should add multi-seed confidence intervals for the neural validation protocol, plus a benchmark environment matrix. Within the current synthetic setting, the most useful addition would be a seed sweep around the \(K=64\) ablation where the full sieve loses realized return. If the loss persists, it should be elevated from a boundary observation to a formal limitation. If it disappears, the paper should still keep the current result as evidence that conservative gates can have finite-sample costs.
+The next version should add multi-seed confidence intervals for the neural validation protocol, plus a larger standard-environment matrix beyond Pendulum-v1. Within the current synthetic setting, the most useful addition would be a seed sweep around the \(K=64\) ablation where the full sieve loses realized return. If the loss persists, it should be elevated from a boundary observation to a formal limitation. If it disappears, the paper should still keep the current result as evidence that conservative gates can have finite-sample costs.
 
 \section{Appendix: Final Submission Readiness Criteria}
 
-For this paper to count as ready under the standard used in this project, the following criteria must hold simultaneously. The PDF must be at least 25 pages because the experiments, ablations, limitations, and reproducibility details require that much space when written honestly. The page count alone is not enough. The manuscript must avoid generic duplicate framing, must state a TT-specific claim, must include substantial new experiments beyond the initial prototype, must report negative controls, must pass the claim audit, must build without unresolved references or citations, and must be pushed to the repository together with source and generated evidence.
+For this paper to count as ready under the standard used in this project, the PDF must be at least 25 pages, avoid generic duplicate framing, state a TT-specific claim, include substantial new experiments beyond the initial prototype, report negative controls, pass the claim audit, build without unresolved references or citations, and be pushed together with source and generated evidence.
 
-The current manuscript is designed around those criteria. Its central vocabulary is trajectory-token support, reward-token tails, prefix surprise, and token/simulator consistency. Its main evidence comes from the primary four-control run plus the expanded stress suite. Its limitations are visible in the main text rather than hidden in a short appendix. Its final PDF is generated from source, not manually edited. Those properties are what make the paper distinguishable from the other desktop projects even if a reviewer places the PDFs side by side.
+The current manuscript satisfies those criteria as a bounded mechanism paper: its evidence comes from the primary four-control run, the expanded stress suite, and the Pendulum-v1 benchmark tier; its limitations are visible in the main text; and its final PDF is generated from source.
 
 \end{document}

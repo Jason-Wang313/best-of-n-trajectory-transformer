@@ -26,8 +26,8 @@ The distinctive diagnostics are:
 
 ## Strongest Contribution
 
-The strongest contribution is a bounded mechanism paper with a full stress suite. It defines a trajectory-token audit, proves and validates an exact finite-candidate selected-utility identity, implements a support-calibrated plan sieve, and reports both repairs and conservative losses.
+The strongest contribution is a bounded mechanism paper with a full stress suite and a standard Pendulum-v1 benchmark stress tier. It defines a trajectory-token audit, proves and validates an exact finite-candidate selected-utility identity, implements a support-calibrated plan sieve, and reports both repairs and conservative losses.
 
 ## Remaining Gap
 
-The main remaining gap is neural Trajectory Transformer benchmark validation. The current repo is submission-ready as a mechanism study, not as a benchmark leaderboard paper.
+The main remaining gap is neural Trajectory Transformer validation on richer offline RL benchmarks. The current repo is submission-ready as a mechanism study with a standard-environment stress test, not as a benchmark leaderboard paper.

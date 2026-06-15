@@ -5,6 +5,8 @@
     "summary_json": true,
     "expansion_metrics": true,
     "expansion_claims_pass": true,
+    "pendulum_metrics": true,
+    "pendulum_claims_pass": true,
     "final_pdf": true,
     "final_pdf_at_least_25_pages": true,
     "novelty_map": true,

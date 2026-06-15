@@ -6,7 +6,7 @@ Response: The paper connects to reward overoptimization, but the diagnostic is s
 
 ## Attack 2: The Model Is Too Small
 
-Response: Correct. The paper is a controlled mechanism study using an inspectable autoregressive surrogate. It does not claim neural benchmark validation. The manuscript includes a neural validation protocol as future work.
+Response: Correct. The paper is a controlled mechanism study using an inspectable autoregressive surrogate. It adds Pendulum-v1 as a standard-environment stress test, but it still does not claim neural benchmark validation. The manuscript includes a neural validation protocol as future work.
 
 ## Attack 3: The Repair Is Likelihood Regularization
 
@@ -26,7 +26,7 @@ Response: The manuscript reports that loss. The repair claim is made where the a
 
 ## Attack 7: Synthetic Results Are Not Enough
 
-Response: Agreed. The paper claims a reproducible mechanism and audit protocol. Benchmark-scale neural TT validation remains the next required evidence layer.
+Response: Agreed as a limitation. The v4 paper adds a Gymnasium Pendulum-v1 stress tier with behavior, fallback, and oracle comparators, so the evidence is no longer restricted to generated environments. Benchmark-scale neural TT validation remains the next required evidence layer.
 
 ## Attack 8: The Claim Thresholds Were Chosen After Seeing Results
 

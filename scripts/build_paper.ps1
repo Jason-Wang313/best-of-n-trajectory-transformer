@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
 $PaperDir = Join-Path $Root "paper"
 $FinalDir = Join-Path $PaperDir "final"
-$FinalPdf = Join-Path $FinalDir "best of n trajectory transformer-v3.pdf"
+$FinalPdf = Join-Path $FinalDir "best of n trajectory transformer-v4.pdf"
 
 New-Item -ItemType Directory -Force $FinalDir | Out-Null
 

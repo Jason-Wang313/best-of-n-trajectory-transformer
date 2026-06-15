@@ -1,0 +1,41 @@
+{
+  "all_passed": true,
+  "claims": {
+    "pendulum_behavior_fallback_repairs": {
+      "description": "A support-gated behavior fallback must improve true return over unsupported high-candidate raw selection.",
+      "status": "pass",
+      "threshold": 6.0,
+      "value": 9.662775342848512
+    },
+    "pendulum_fallback_reduces_dynamics_mismatch": {
+      "description": "The fallback must reduce selected token/simulator dynamics mismatch.",
+      "status": "pass",
+      "threshold": 1.0,
+      "value": 1.4911028766870968
+    },
+    "pendulum_oracle_gap_visible": {
+      "description": "The candidate pool must contain better action sequences than raw reward-token selection chooses.",
+      "status": "pass",
+      "threshold": 6.0,
+      "value": 9.089614557012425
+    },
+    "pendulum_raw_reward_extremizes": {
+      "description": "On Gymnasium Pendulum-v1, increasing raw candidate count to 64 must strongly increase decoded reward-token return.",
+      "status": "pass",
+      "threshold": 20.0,
+      "value": 28.875000000000004
+    },
+    "pendulum_raw_true_return_not_improved": {
+      "description": "The same high-candidate raw selection must not translate into better true Pendulum return.",
+      "status": "pass",
+      "threshold": -0.25,
+      "value": -0.6600311967060541
+    },
+    "pendulum_raw_worse_than_behavior": {
+      "description": "High-candidate raw reward-token selection must underperform a behavior-policy baseline.",
+      "status": "pass",
+      "threshold": -6.0,
+      "value": -9.662775342848512
+    }
+  }
+}

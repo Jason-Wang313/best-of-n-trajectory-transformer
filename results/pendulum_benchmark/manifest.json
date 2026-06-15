@@ -1,0 +1,9 @@
+{
+  "aggregate_metrics": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\pendulum_benchmark\\aggregate_metrics.csv",
+  "all_passed": true,
+  "claims": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\pendulum_benchmark\\claims.json",
+  "effects": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\pendulum_benchmark\\effects.csv",
+  "figure": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\pendulum_benchmark\\pendulum_benchmark.png",
+  "metrics": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\pendulum_benchmark\\metrics.csv",
+  "summary": "C:\\Users\\wangz\\best of n trajectory transformer\\results\\pendulum_benchmark\\summary.json"
+}
