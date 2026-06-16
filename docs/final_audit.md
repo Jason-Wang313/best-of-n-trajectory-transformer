@@ -1,5 +1,38 @@
 # Final Audit
 
+## Final Artifact and Provenance
+
+- Paper: `best of n trajectory transformer-v4.pdf`
+- Source folder: `C:\Users\wangz\best of n trajectory transformer`
+- GitHub remote: `https://github.com/Jason-Wang313/best-of-n-trajectory-transformer.git`
+- Repository PDF: `paper/final/best of n trajectory transformer-v4.pdf`
+- Visible Desktop PDF: `C:\Users\wangz\OneDrive\Desktop\best of n trajectory transformer-v4.pdf`
+- SHA256: `5DF1DE98D2D8662D23D700EF9470536685E3F780E9DBBFAE270D001E8AA51686`
+- Page count: 27
+- Repo/Desktop hash match: yes
+- Verified on: 2026-06-16
+
+## Final Verification
+
+```powershell
+python -m compileall src tests -q
+python -m pytest -q
+python -m trajectory_token_sieve.experiments.run_claim_audit
+powershell -ExecutionPolicy Bypass -File scripts\build_paper.ps1 -DesktopCopy "C:\Users\wangz\OneDrive\Desktop\best of n trajectory transformer-v4.pdf"
+rg -n "undefined|Citation.*undefined|Reference.*undefined|Rerun to get|Overfull|LaTeX Warning|Package natbib Warning" "paper\main.log"
+pdfinfo "paper\final\best of n trajectory transformer-v4.pdf"
+pdftoppm -png "paper\final\best of n trajectory transformer-v4.pdf" "tmp\pdfs\trajectory_transformer_v4\page"
+```
+
+Results:
+
+- Compile check: passed.
+- Unit tests: 11 passed.
+- Claim audit: pass.
+- Final LaTeX log scan: no unresolved citations, unresolved references, rerun warnings, overfull boxes, or natbib warnings.
+- PDF render: all 27 pages rendered.
+- Visual QA: pages 1, 7, 10, 16, 21, and 27 inspected for title/abstract, primary tables, benchmark figures, finite-law evidence, references, appendix run matrix, clipping, and readability.
+
 1. **What is the discovered main thesis?**
 
    Score-only Trajectory Transformer-style planning can extremize decoded reward tokens while selecting trajectory-token strings whose prefixes are low-support or whose state tokens are dynamically inconsistent with their action tokens. The failure is visible only when the selected object is audited as a full state/action/reward token string.
@@ -30,4 +63,4 @@
 
 8. **Where is the final PDF saved?**
 
-   Repository copy: `paper/final/` as produced by `scripts/build_paper.ps1`.
+   Repository copy: `paper/final/` as produced by `scripts\build_paper.ps1 -DesktopCopy`. The visible Desktop copy is produced by the same verified build command.

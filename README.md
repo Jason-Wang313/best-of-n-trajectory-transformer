@@ -24,7 +24,7 @@ python -m trajectory_token_sieve.experiments.run_expansion_suite
 python -m trajectory_token_sieve.experiments.run_pendulum_benchmark
 python -m trajectory_token_sieve.experiments.run_claim_audit
 pytest
-.\scripts\build_paper.ps1
+.\scripts\build_paper.ps1 -DesktopCopy "C:\Users\wangz\OneDrive\Desktop\best of n trajectory transformer-v4.pdf"
 ```
 
 ## Main Outputs

@@ -1,3 +1,7 @@
+param(
+    [string]$DesktopCopy = ""
+)
+
 $ErrorActionPreference = "Stop"
 
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -15,9 +19,20 @@ try {
     pdflatex -interaction=nonstopmode -halt-on-error main.tex
     pdflatex -interaction=nonstopmode -halt-on-error main.tex
     Copy-Item -LiteralPath "main.pdf" -Destination $FinalPdf -Force
+    if ($DesktopCopy) {
+        $DesktopDir = Split-Path -Parent $DesktopCopy
+        if ($DesktopDir) {
+            New-Item -ItemType Directory -Force -Path $DesktopDir | Out-Null
+        }
+        Copy-Item -LiteralPath $FinalPdf -Destination $DesktopCopy -Force
+    }
+    Remove-Item -Force "main.pdf" -ErrorAction SilentlyContinue
 }
 finally {
     Pop-Location
 }
 
 Write-Host "Saved $FinalPdf"
+if ($DesktopCopy) {
+    Write-Host "Saved $DesktopCopy"
+}
