@@ -7,10 +7,10 @@
 - GitHub remote: `https://github.com/Jason-Wang313/best-of-n-trajectory-transformer.git`
 - Repository PDF: `paper/final/best of n trajectory transformer-v4.pdf`
 - Visible Desktop PDF: `C:\Users\wangz\OneDrive\Desktop\best of n trajectory transformer-v4.pdf`
-- SHA256: `5DF1DE98D2D8662D23D700EF9470536685E3F780E9DBBFAE270D001E8AA51686`
+- SHA256: `62F04ADAC1AF3AE65F26C7D73DC21C40732C673F2523E816F496DC1121AB2C8E`
 - Page count: 27
 - Repo/Desktop hash match: yes
-- Verified on: 2026-06-16
+- Verified on: 2026-06-19
 
 ## Final Verification
 
@@ -31,7 +31,7 @@ Results:
 - Claim audit: pass.
 - Final LaTeX log scan: no unresolved citations, unresolved references, rerun warnings, overfull boxes, or natbib warnings.
 - PDF render: all 27 pages rendered.
-- Visual QA: pages 1, 7, 10, 16, 21, and 27 inspected for title/abstract, primary tables, benchmark figures, finite-law evidence, references, appendix run matrix, clipping, and readability.
+- Visual QA: pages 1, 6, 7, 10, 18, 21, 22, and 27 inspected for title/abstract, primary tables, benchmark figures, references, appendix diagnostics, appendix run matrix, clipping, and readability.
 
 1. **What is the discovered main thesis?**
 

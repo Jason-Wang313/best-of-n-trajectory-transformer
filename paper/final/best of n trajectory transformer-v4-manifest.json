@@ -4,9 +4,9 @@
   "github_remote": "https://github.com/Jason-Wang313/best-of-n-trajectory-transformer.git",
   "repository_pdf": "paper/final/best of n trajectory transformer-v4.pdf",
   "desktop_pdf": "C:\\Users\\wangz\\OneDrive\\Desktop\\best of n trajectory transformer-v4.pdf",
-  "sha256": "5DF1DE98D2D8662D23D700EF9470536685E3F780E9DBBFAE270D001E8AA51686",
+  "sha256": "62F04ADAC1AF3AE65F26C7D73DC21C40732C673F2523E816F496DC1121AB2C8E",
   "pages": 27,
-  "verified_on": "2026-06-16",
+  "verified_on": "2026-06-19",
   "checks": {
     "compileall": "passed",
     "pytest": "11 passed",
@@ -14,6 +14,6 @@
     "latex_final_log_scan": "passed",
     "repo_desktop_hash_match": true,
     "pdf_render": "all 27 pages rendered",
-    "visual_qa": "pages 1, 7, 10, 16, 21, and 27 inspected"
+    "visual_qa": "pages 1, 6, 7, 10, 18, 21, 22, and 27 inspected"
   }
 }
